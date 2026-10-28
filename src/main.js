@@ -69,9 +69,54 @@ Alpine.data('imageCompressorApp', () => ({
         e.target.value = '';
     },
 
+    // محاسبه هش/اثر انگشت محتوای فایل به منظور تشخیص دقیق تصاویر تکراری
+    async getFileFingerprint(file) {
+        try {
+            // استفاده از Web Crypto API برای تولید هش SHA-256 از محتوای فایل
+            const buffer = await file.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch (e) {
+            return `${file.name}_${file.size}_${file.lastModified}`;
+        }
+    },
+
+    // تولید نام اختصاصی و یکتا در صورت تشابه نام فایل با فایل‌های موجود (مانند c:\a.jpg و d:\a.jpg)
+    getUniqueFileName(name) {
+        const existingNames = new Set(this.originalFiles.map(f => f.name));
+        if (!existingNames.has(name)) {
+            return name;
+        }
+
+        const dotIndex = name.lastIndexOf('.');
+        const baseName = dotIndex !== -1 ? name.substring(0, dotIndex) : name;
+        const ext = dotIndex !== -1 ? name.substring(dotIndex) : '';
+
+        let counter = 1;
+        let candidate = `${baseName} (${counter})${ext}`;
+        while (existingNames.has(candidate)) {
+            counter++;
+            candidate = `${baseName} (${counter})${ext}`;
+        }
+        return candidate;
+    },
+
     // افزودن فایل‌های جدید و محاسبه فشرده‌سازی منحصراً برای فایل‌های جدید
     async addFiles(files) {
         for (const file of files) {
+            // محاسبه هش محتوای واقعی تصویر
+            const hash = await this.getFileFingerprint(file);
+
+            // بررسی دقیق محتوا: اگر تصویر با محتوای یکسان قبلاً اضافه شده باشد، نادیده گرفته می‌شود
+            const isDuplicate = this.originalFiles.some(existing => existing.hash === hash);
+            if (isDuplicate) {
+                continue;
+            }
+
+            // اگر محتوا متفاوت است اما اسم فایل یکسان است (مثل a.jpg در دو مسیر مختلف)، نام یکتا دریافت می‌کند
+            const uniqueName = this.getUniqueFileName(file.name);
+
             const id = 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
             const previewUrl = URL.createObjectURL(file);
             const dims = await this.getImageDimensions(previewUrl);
@@ -79,7 +124,9 @@ Alpine.data('imageCompressorApp', () => ({
             const origRecord = {
                 id: id,
                 file: file,
-                name: file.name,
+                hash: hash,
+                name: uniqueName,
+                originalName: file.name,
                 size: file.size,
                 type: file.type,
                 width: dims.width,
@@ -95,7 +142,7 @@ Alpine.data('imageCompressorApp', () => ({
             const placeholder = {
                 id: id,
                 blob: null,
-                name: file.name,
+                name: uniqueName,
                 size: file.size, // مقدار اولیه جهت ثبات نمایش
                 width: dims.width,
                 height: dims.height,

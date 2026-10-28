@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#4f46e5" />
+    </linearGradient>
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+  <!-- Background with smooth rounded corners -->
+  <rect width="64" height="64" rx="16" fill="url(#grad)" />
+  
+  <!-- Mountains representing image -->
+  <path d="M14 45 L26 29 L36 41 L42 35 L50 45 Z" fill="#ffffff" opacity="0.95" />
+  
+  <!-- Sun -->
+  <circle cx="23" cy="22" r="5" fill="url(#sun)" />
+  
+  <!-- Compression arrows pointing inward -->
+  <g stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M49 15 L41 23" />
+    <path d="M41 17 L41 23 L47 23" />
+    <path d="M15 51 L23 43" />
+    <path d="M23 49 L23 43 L17 43" />
+  </g>
+</svg>
+
