@@ -38,7 +38,7 @@
         </aside>
 
         <!-- Main Content Area: in mobile spans full width col-span-2 below ads, in desktop occupies center column -->
-        <main class="col-span-2 lg:col-span-1 order-3 lg:order-2 min-w-0 w-full max-w-4xl mx-auto">
+        <main class="col-span-2 lg:col-span-1 order-3 lg:order-2 min-w-0 w-full">
             
             <!-- Upload Drop Zone -->
             <div 
@@ -68,19 +68,6 @@
                 </div>
             </div>
 
-            <!-- Empty State -->
-            <template x-if="originalFiles.length === 0">
-                <div class="text-center py-16 bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-8 shadow-sm">
-                    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-base font-bold text-slate-700 mb-1">هنوز تصویری اضافه نکرده‌اید</h3>
-                    <p class="text-xs text-slate-400 max-w-sm mx-auto">عکس‌های خود را اضافه کنید تا با کیفیت اولیه ۸۰٪ فوراً فشرده شوند.</p>
-                </div>
-            </template>
-
             <!-- Masonry Gallery -->
             <div class="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4 mb-28">
                 <template x-for="orig in originalFiles" :key="orig.id">
@@ -89,22 +76,8 @@
                         <!-- Window Title Bar (Header) -->
                         <div class="window-title-bar px-3 py-2 border-b border-slate-200 flex items-center justify-between gap-2 select-none">
                             
-                            <!-- Right: Distinct ZIP Icon Button -->
-                            <button 
-                                type="button"
-                                @click="orig.selected = !orig.selected" 
-                                class="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-150 flex-shrink-0 cursor-pointer"
-                                :class="orig.selected ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-400/40' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'"
-                                :title="orig.selected ? 'انتخاب شده برای زیپ (کلیک برای لغو)' : 'کلیک برای انتخاب در فایل زیپ'"
-                            >
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H14L20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="M8 5H10M10 7H8M8 9H10M10 11H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                                    <rect x="7" y="13.5" width="10" height="5.5" rx="1" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
-                                    <text x="12" y="17.6" font-size="3.6" font-weight="900" text-anchor="middle" fill="currentColor" font-family="sans-serif">ZIP</text>
-                                </svg>
-                            </button>
+                            <!-- Right: Empty Placeholder to maintain symmetry with delete button -->
+                            <div class="w-7 h-7 flex-shrink-0 pointer-events-none" aria-hidden="true"></div>
 
                             <!-- Middle: File Name LTR & Dimensions (Centered with LTR direction) -->
                             <div class="flex-1 min-w-0 px-2" style="direction: ltr; text-align: center;">
@@ -142,34 +115,38 @@
                         <!-- Card Footer: Permanent Stable Layout -->
                         <div class="p-3 bg-white border-t border-slate-100 flex flex-col justify-between">
                             
-                            <!-- Slider Header: Quality % -->
+                            <!-- Slider Header: Compression % -->
                             <div class="flex justify-between items-center text-xs mb-1.5">
-                                <span class="text-slate-500 font-medium">کیفیت تصویر:</span>
-                                <span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px]" x-text="orig.quality + '٪'"></span>
+                                <span class="text-slate-500 font-medium">درصد فشرده‌سازی:</span>
+                                <span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px]" x-text="orig.compression + '٪'"></span>
                             </div>
 
-                            <!-- Quality Slider (Step 1 by 1) -->
+                            <!-- Compression Slider (Step 1 by 1: 1 to 100) -->
                             <input 
                                 type="range" 
                                 min="1" 
                                 max="100" 
                                 step="1" 
-                                x-model.number="orig.quality" 
-                                @input="onQualityChange(orig)" 
-                                class="w-full mb-2 cursor-pointer"
-                                title="تنظیم درصد کیفیت"
+                                x-model.number="orig.compression" 
+                                @input="onCompressionChange(orig)" 
+                                class="w-full mb-3 cursor-pointer"
+                                title="تنظیم درصد فشرده‌سازی (۱ تا ۱۰۰)"
                             >
 
-                            <!-- Size Before & After -->
-                            <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2.5">
-                                <div>
-                                    <span>حجم قبل: </span>
-                                    <strong class="text-slate-700" x-text="formatBytes(orig.size)"></strong>
+                            <!-- Size Before & After (Two sides, label on top line, size underneath) -->
+                            <div class="flex justify-between items-start text-xs mb-3 bg-slate-50/80 p-2.5 rounded-xl border border-slate-100">
+                                <!-- Right Side: قبل از فشرده سازی -->
+                                <div class="flex flex-col text-right">
+                                    <span class="text-[11px] text-slate-500">حجم قبل از فشرده سازی</span>
+                                    <strong class="text-xs font-bold text-slate-700 mt-1" x-text="formatBytes(orig.size)"></strong>
                                 </div>
-                                <div class="flex items-center">
-                                    <span>حجم بعد: </span>
-                                    <strong class="text-blue-600 font-bold ml-1 transition-opacity" :class="{ 'opacity-60': getCompressed(orig.id)?.processing }" x-text="formatBytes(getCompressed(orig.id)?.size || orig.size)"></strong>
-                                    <span x-show="getCompressed(orig.id)?.processing" class="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping mr-1"></span>
+                                <!-- Left Side: بعد از فشرده سازی -->
+                                <div class="flex flex-col text-left items-end">
+                                    <span class="text-[11px] text-slate-500">حجم بعد از فشرده سازی</span>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <strong class="text-xs font-bold text-blue-600 transition-opacity" :class="{ 'opacity-60': getCompressed(orig.id)?.processing }" x-text="formatBytes(getCompressed(orig.id)?.size || orig.size)"></strong>
+                                        <span x-show="getCompressed(orig.id)?.processing" class="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -183,12 +160,12 @@
                                     ></span>
                                 </div>
 
-                                <!-- Safe Download Button in Footer -->
+                                <!-- Safe Download Button in Footer with Crisp Border -->
                                 <button 
                                     @click="downloadSingle(getCompressed(orig.id))" 
                                     :disabled="getCompressed(orig.id)?.processing || !getCompressed(orig.id)?.blob"
-                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white disabled:opacity-40 disabled:pointer-events-none rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95" 
-                                    title="دانلود اختصاصی این تصویر"
+                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 disabled:opacity-40 disabled:pointer-events-none rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95" 
+                                    title="دانلود این تصویر"
                                 >
                                     <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -210,32 +187,21 @@
     <!-- Sticky Floating Bottom Bar for ZIP & Batch Actions -->
     <template x-if="originalFiles.length > 0">
         <div class="fixed bottom-4 inset-x-0 z-50 flex justify-center px-3 pointer-events-none">
-            <div class="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl p-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 sm:gap-6 max-w-xl w-full">
+            <div class="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl p-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-2.5 sm:gap-4 max-w-xl w-full">
                 
-                <!-- Selection Toggle Button -->
-                <button 
-                    @click="toggleSelectAll()" 
-                    class="text-xs font-bold text-slate-600 hover:text-blue-600 px-2 py-1.5 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-1.5 flex-shrink-0"
-                >
-                    <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span x-text="isAllSelected ? 'لغو انتخاب' : 'انتخاب همه'"></span>
-                </button>
-
                 <!-- Stats Summary -->
-                <div class="hidden sm:flex flex-col text-right leading-tight">
+                <div class="hidden sm:flex flex-col text-right leading-tight flex-shrink-0">
                     <span class="text-xs font-bold text-slate-700">
-                        <span class="text-blue-600 font-extrabold" x-text="selectedCount"></span> از <span x-text="originalFiles.length"></span> عکس انتخاب‌شده
+                        <span class="text-blue-600 font-extrabold" x-text="originalFiles.length"></span> تصویر آماده دانلود
                     </span>
                     <span class="text-[11px] text-emerald-600 font-medium" x-show="totalSavedPercent > 0" x-text="'صرفه‌جویی کل: ' + totalSavedPercent + '٪'"></span>
                 </div>
 
-                <!-- Big ZIP Download Button -->
+                <!-- Big ZIP Download Button (No number badge) -->
                 <button 
                     @click="downloadSelectedAsZip()" 
-                    :disabled="selectedCount === 0 || isZipping || isProcessingAny" 
-                    class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-400 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-98 transition-all disabled:pointer-events-none"
+                    :disabled="originalFiles.length === 0 || isZipping || isProcessingAny" 
+                    class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-400 text-white font-bold py-2 sm:py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-98 transition-all disabled:pointer-events-none"
                 >
                     <template x-if="!isZipping">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -248,19 +214,19 @@
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                     </template>
-                    <span>دانلود ZIP</span>
-                    <span class="bg-white/20 text-white text-[11px] px-2 py-0.5 rounded-full" x-text="selectedCount"></span>
+                    <span>دانلود همه در فایل ZIP</span>
                 </button>
 
-                <!-- Clear All Button -->
+                <!-- Clear All Button (Red with Text) -->
                 <button 
                     @click="clearAll()" 
-                    class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors flex-shrink-0" 
+                    class="flex items-center gap-1.5 px-3 py-2 sm:py-2.5 text-xs sm:text-sm font-bold text-red-600 bg-red-50 hover:bg-red-600 hover:text-white border border-red-200 hover:border-red-600 rounded-xl transition-all shadow-sm active:scale-95 flex-shrink-0" 
                     title="حذف تمام تصاویر"
                 >
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
+                    <span>حذف همه</span>
                 </button>
 
             </div>

@@ -27,22 +27,13 @@ Alpine.data('imageCompressorApp', () => ({
         return this.compressedFiles.some(f => f.processing);
     },
 
-    // محاسبات حجم برای فایل‌های انتخاب‌شده
-    get selectedOriginalFiles() {
-        return this.originalFiles.filter(f => f.selected);
-    },
-
+    // محاسبات حجم برای فایل‌ها
     get totalOriginalSize() {
-        const list = this.selectedOriginalFiles.length > 0 ? this.selectedOriginalFiles : this.originalFiles;
-        return list.reduce((acc, curr) => acc + curr.size, 0);
+        return this.originalFiles.reduce((acc, curr) => acc + curr.size, 0);
     },
 
     get totalCompressedSize() {
-        const list = this.selectedOriginalFiles.length > 0 ? this.selectedOriginalFiles : this.originalFiles;
-        const activeIds = new Set(list.map(f => f.id));
-        return this.compressedFiles
-            .filter(f => activeIds.has(f.id))
-            .reduce((acc, curr) => acc + (curr.size || 0), 0);
+        return this.compressedFiles.reduce((acc, curr) => acc + (curr.size || 0), 0);
     },
 
     get totalSavedPercent() {
@@ -94,7 +85,7 @@ Alpine.data('imageCompressorApp', () => ({
                 width: dims.width,
                 height: dims.height,
                 previewUrl: previewUrl,
-                quality: 80, // پیش‌فرض ۸۰٪
+                compression: 70, // پیش‌فرض ۷۰٪ فشرده‌سازی
                 selected: true // به صورت خودکار تیک‌خورده برای زیپ
             };
 
@@ -128,15 +119,20 @@ Alpine.data('imageCompressorApp', () => ({
         });
     },
 
-    // فشرده‌سازی یک تک‌فایل بر اساس کیفیت تنظیمی همان فایل
+    // فشرده‌سازی یک تک‌فایل بر اساس درصد فشرده‌سازی تنظیمی همان فایل (برعکس: درصد بیشتر = حجم کمتر)
     compressSingle(origRecord) {
         const targetComp = this.compressedFiles.find(f => f.id === origRecord.id);
         if (targetComp) {
             targetComp.processing = true;
         }
 
+        // محاسبه معکوس کیفیت: درصد فشرده‌سازی بیشتر => کیفیت کمتر و فایل کم‌حجم‌تر
+        // در حالت ۱۰۰٪ فشرده‌سازی، حداقل کیفیت معتبر 0.01 ارسال می‌شود
+        const compRate = origRecord.compression !== undefined ? origRecord.compression : (100 - (origRecord.quality || 80));
+        const calculatedQuality = Math.max(0.01, Math.min(0.99, (100 - compRate) / 100));
+
         new Compressor(origRecord.file, {
-            quality: origRecord.quality / 100, // گام ۱ به ۱
+            quality: calculatedQuality,
             checkOrientation: true,
             strict: true,
             success: async (resultBlob) => {
@@ -177,12 +173,16 @@ Alpine.data('imageCompressorApp', () => ({
         });
     },
 
-    // تغییر کیفیت یک فایل اختصاصی با Debounce
-    onQualityChange(orig) {
+    // تغییر درصد فشرده‌سازی یک فایل اختصاصی با Debounce
+    onCompressionChange(orig) {
         clearTimeout(this.debounceTimers[orig.id]);
         this.debounceTimers[orig.id] = setTimeout(() => {
             this.compressSingle(orig);
         }, 250);
+    },
+
+    onQualityChange(orig) {
+        this.onCompressionChange(orig);
     },
 
     // تغییر وضعیت انتخاب برای زیپ
@@ -236,10 +236,9 @@ Alpine.data('imageCompressorApp', () => ({
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     },
 
-    // دانلود فایل‌های انتخاب‌شده به صورت ZIP
+    // دانلود تمام فایل‌ها به صورت ZIP
     async downloadSelectedAsZip() {
-        const selectedOrigIds = new Set(this.originalFiles.filter(f => f.selected).map(f => f.id));
-        const itemsToZip = this.compressedFiles.filter(c => selectedOrigIds.has(c.id) && c.blob);
+        const itemsToZip = this.compressedFiles.filter(c => c.blob);
 
         if (itemsToZip.length === 0 || this.isZipping) return;
 
