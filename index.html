@@ -1,241 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="fa" dir="rtl">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="favicon.svg" rel="shortcut icon" type="image/vnd.microsoft.icon" />
-    <link rel="shortcut icon" href="./favicon.svg">
-    <title>Image Compressor</title>
-    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.rtl.min.css">
-    <link rel="stylesheet" href="./node_modules/boxicons/css/boxicons.min.css">
-    <link rel="stylesheet" href="./node_modules/vazirmatn/Vazirmatn-font-face.css">
-    <link rel="stylesheet" href="./css/bootstrap-social-rtl.css">
-    <style>
-        html,
-        body {
-            font-family: "Vazirmatn" !important;
-            -moz-osx-font-smoothing: grayscale;
-            -webkit-font-smoothing: antialiased;
-            direction: rtl;
-        }
-
-        .p-rl-4 {
-            padding-left: 4px;
-            padding-right: 4px;
-        }
-
-        .splash {
-            background-image: url('loading.svg');
-            background-color: rgba(0, 0, 0, 0.3);
-            inset: 0px;
-            position: absolute;
-            z-index: 9998;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فشرده‌ساز تصاویر | کاملاً سمت کاربر</title>
 </head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
 
-<body>
+<div x-data="imageCompressorApp" class="min-h-screen flex flex-col justify-between">
 
-    <div class="container" id="app">
-        <div class="row mt-4">
-            <div class="col-12">
-                <label for="fileUploadInput" class="btn btn-primary btn-lg btn-social w-100 py-5">
-                    <i class='bx bx-plus-medical'></i>
-                    عکس های خود را اضافه کنید
-                </label>
-                <input type="file" multiple class="d-none" accept="image/*" id="fileUploadInput">
+    <!-- Responsive Grid:
+         - Mobile (< lg): Top row has 2 ads side-by-side (grid-cols-2), Main content spans full width below (order-3, col-span-2)
+         - Desktop (>= lg): 3-column layout [Ad Right (160px)] [Main Content (1fr)] [Ad Left (160px)]
+    -->
+    <div class="max-w-[1440px] w-full mx-auto px-3 sm:px-4 py-4 sm:py-6 grid grid-cols-2 lg:grid-cols-[160px_1fr_160px] gap-3 sm:gap-4 items-start">
+
+        <!-- Right Ad Slot -->
+        <aside class="col-span-1 order-1 lg:order-1 w-full flex-shrink-0">
+            <div class="lg:sticky lg:top-6 border-2 border-dashed border-slate-300 rounded-xl sm:rounded-2xl h-20 sm:h-24 lg:h-[560px] flex flex-col items-center justify-center p-2 text-center text-slate-400 bg-white/70 shadow-sm transition-all">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 mb-1 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                </svg>
+                <span class="font-bold text-[11px] sm:text-xs">تبلیغات ۱</span>
+                <span class="text-[9px] text-slate-400 mt-0.5 hidden lg:block">160 × 600</span>
             </div>
-        </div>
-        <div class="row row-cols-1 row-cols-md-4 g-4 my-4" id="fileUploadedImages">
-        </div>
-        <div class="row my-4">
-            <div class="col-sm-8">
-                <button class="btn btn-success btn-lg btn-social w-100 downloadButton">
-                    <i class='bx bx-cloud-download'></i>
-                    دانلود همه عکسهای فشرده شده
-                </button>
+        </aside>
+
+        <!-- Left Ad Slot -->
+        <aside class="col-span-1 order-2 lg:order-3 w-full flex-shrink-0">
+            <div class="lg:sticky lg:top-6 border-2 border-dashed border-slate-300 rounded-xl sm:rounded-2xl h-20 sm:h-24 lg:h-[560px] flex flex-col items-center justify-center p-2 text-center text-slate-400 bg-white/70 shadow-sm transition-all">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 lg:w-7 lg:h-7 mb-1 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+                </svg>
+                <span class="font-bold text-[11px] sm:text-xs">تبلیغات ۲</span>
+                <span class="text-[9px] text-slate-400 mt-0.5 hidden lg:block">160 × 600</span>
             </div>
-            <div class="col-sm-4">
-                <button class="btn btn-danger btn-lg btn-social w-100 deleteButton">
-                    <i class='bx bx-trash'></i>
-                    حذف همه عکسهای فشرده شده
-                </button>
+        </aside>
+
+        <!-- Main Content Area: in mobile spans full width col-span-2 below ads, in desktop occupies center column -->
+        <main class="col-span-2 lg:col-span-1 order-3 lg:order-2 min-w-0 w-full max-w-4xl mx-auto">
+            
+            <!-- Upload Drop Zone -->
+            <div 
+                class="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-2xl sm:rounded-3xl p-5 sm:p-7 text-center bg-white shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer mb-3 sm:mb-4"
+                :class="{ 'border-blue-500 bg-blue-50/50 scale-[1.01]': isDragging }"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="handleDrop($event)"
+                @click="$refs.fileInput.click()"
+            >
+                <input 
+                    type="file" 
+                    x-ref="fileInput" 
+                    @change="handleFileInput($event)" 
+                    multiple 
+                    accept="image/*" 
+                    class="hidden"
+                >
+                <div class="flex flex-col items-center justify-center">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-2.5 shadow-inner">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-800 mb-1">تصاویر را اینجا رها کنید یا برای انتخاب کلیک نمایید</h2>
+                    <p class="text-[11px] sm:text-xs text-slate-400">پشتیبانی از انواع فرمت‌ها (JPG, PNG, WEBP) • پردازش تماماً در مرورگر</p>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="./node_modules/compressorjs/dist/compressor.js"></script>
-    <script src="./node_modules/jszip/dist/jszip.min.js"></script>
-    <script src="./node_modules/file-saver/dist/FileSaver.min.js"></script>
+            <!-- Empty State -->
+            <template x-if="originalFiles.length === 0">
+                <div class="text-center py-16 bg-white border border-slate-200 rounded-2xl sm:rounded-3xl p-8 shadow-sm">
+                    <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-700 mb-1">هنوز تصویری اضافه نکرده‌اید</h3>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto">عکس‌های خود را اضافه کنید تا با کیفیت اولیه ۸۰٪ فوراً فشرده شوند.</p>
+                </div>
+            </template>
 
-    <script>
+            <!-- Masonry Gallery -->
+            <div class="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4 mb-28">
+                <template x-for="orig in originalFiles" :key="orig.id">
+                    <div class="masonry-item bg-white rounded-2xl shadow-sm hover:shadow-md border border-slate-200 overflow-hidden transition-all duration-200 flex flex-col">
+                        
+                        <!-- Window Title Bar (Header) -->
+                        <div class="window-title-bar px-3 py-2 border-b border-slate-200 flex items-center justify-between gap-2 select-none">
+                            
+                            <!-- Right: Distinct ZIP Icon Button -->
+                            <button 
+                                type="button"
+                                @click="orig.selected = !orig.selected" 
+                                class="w-7 h-7 flex items-center justify-center rounded-lg transition-all duration-150 flex-shrink-0 cursor-pointer"
+                                :class="orig.selected ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-400/40' : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'"
+                                :title="orig.selected ? 'انتخاب شده برای زیپ (کلیک برای لغو)' : 'کلیک برای انتخاب در فایل زیپ'"
+                            >
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 4C4 2.89543 4.89543 2 6 2H14L20 8V20C20 21.1046 19.1046 22 18 22H6C4.89543 22 4 21.1046 4 20V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                                    <path d="M8 5H10M10 7H8M8 9H10M10 11H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                    <rect x="7" y="13.5" width="10" height="5.5" rx="1" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+                                    <text x="12" y="17.6" font-size="3.6" font-weight="900" text-anchor="middle" fill="currentColor" font-family="sans-serif">ZIP</text>
+                                </svg>
+                            </button>
 
-        let myFiles = [];
+                            <!-- Middle: File Name LTR & Dimensions (Centered with LTR direction) -->
+                            <div class="flex-1 min-w-0 px-2" style="direction: ltr; text-align: center;">
+                                <p class="text-xs font-bold text-slate-700 truncate" style="direction: ltr; text-align: center;" :title="orig.name" x-text="orig.name"></p>
+                                <span class="text-[10px] text-slate-400 block" style="direction: ltr; text-align: center;" x-text="(getCompressed(orig.id)?.width || orig.width) + ' × ' + (getCompressed(orig.id)?.height || orig.height) + ' px'"></span>
+                            </div>
 
-        const encodeHTML = (str) => {
-            return str.replace(/javascript:/gi, '').replace(/[^\w-_. ]/gi, function (c) {
-                return `&#${c.charCodeAt(0)};`;
-            });
-        }
+                            <!-- Left: Window Close / Delete Button -->
+                            <button 
+                                @click="removeFile(orig.id)" 
+                                class="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-red-500 transition-all flex-shrink-0" 
+                                title="حذف این تصویر"
+                            >
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
 
-        const prettySize = (size) => {
-            var kilobyte = 1024;
-            var megabyte = kilobyte * kilobyte;
+                        </div>
 
-            if (size > megabyte) {
-                return (size / megabyte).toFixed(2) + ' MB';
-            } else if (size > kilobyte) {
-                return (size / kilobyte).toFixed(2) + ' KB';
-            } else if (size >= 0) {
-                return size + ' B';
-            }
-
-            return 'N/A';
-        }
-
-        const downloadAction = (myFileIndex = '') => {
-            if (myFileIndex) {
-                saveAs(myFiles[myFileIndex].blob, myFiles[myFileIndex].blob.name);
-            } else {
-                var zip = new JSZip();
-                downloadList = myFiles;
-                for (const downloadFile of downloadList) {
-                    let fileName = downloadFile.input.name;
-                    zip.file(fileName, downloadFile.blob, { binary: true });
-                }
-                zip.generateAsync({ type: "blob" })
-                    .then(function (content) {
-                        saveAs(content, "akrez.zip");
-                    });
-            }
-
-        }
-
-        const deleteAction = (myFileIndex = '') => {
-            if (myFileIndex) {
-                myFiles.splice(myFileIndex, 1);
-            } else {
-                myFiles.splice(0, myFiles.length);
-            }
-            renderAll()
-        }
-
-        function renderAll() {
-            $("#fileUploadedImages").html('');
-            myFileIndex = 0;
-            for (const myFile of myFiles) {
-                if (myFile.src) {
-                    $("#fileUploadedImages").prepend(`<div class="col">
-                        <div class="card">
-                            <img src="` + myFile.src + `" class="">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">` + encodeHTML(myFile.input.name) + `</li>
-                                <li class="list-group-item">` + prettySize(myFile.input.size) + `</li>
-                                <li class="list-group-item">` + prettySize(myFile.blob.size) + `</li>
-                                <li class="list-group-item">`+ parseInt(((myFile.input.size - myFile.blob.size) / myFile.input.size) * 100) + `%</li>
-                            </ul>
-                            <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-sm-8 p-rl-4">
-                                        <button class="btn btn-success btn-sm btn-social w-100 downloadButton" data-myFile-index="`+ myFileIndex + `">
-                                            <i class='bx bx-cloud-download'></i>
-                                            دانلود
-                                        </button>
-                                    </div>
-                                    <div class="col-sm-4 p-rl-4">
-                                        <button class="btn btn-danger btn-sm btn-social w-100 deleteButton" data-myFile-index="`+ myFileIndex + `">
-                                            <i class='bx bx-trash'></i>
-                                            حذف
-                                        </button>
-                                    </div>
-                                </div>
+                        <!-- Card Body: Displays compressed image directly -->
+                        <div class="bg-slate-100 flex items-center justify-center overflow-hidden relative min-h-[120px]">
+                            <img :src="getImagePreviewUrl(orig.id)" class="w-full h-auto object-cover max-h-96" alt="تصویر">
+                            
+                            <!-- Discreet processing indicator in corner -->
+                            <div x-show="getCompressed(orig.id)?.processing" class="absolute top-2 right-2 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1.5 shadow-md">
+                                <svg class="animate-spin h-3 w-3 text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>محاسبه...</span>
                             </div>
                         </div>
-                    </div>`);
-                }
-                myFileIndex++;
-            }
-        }
 
-        async function compressAll(force = false) {
-            $("#app").addClass('splash');
-            let changedMyFileIndex = [];
-            myFileIndex = 0;
-            for (const myFile of myFiles) {
-                if (force || myFile.blob == null) {
-                    let promise = new Promise((resolve, reject) => {
-                        new Compressor(myFile.input, {
-                            strict: true,
-                            checkOrientation: true,
-                            retainExif: false,
-                            maxWidth: undefined,
-                            maxHeight: undefined,
-                            minWidth: 0,
-                            minHeight: 0,
-                            width: undefined,
-                            height: undefined,
-                            resize: 'none',
-                            quality: 0.8,
-                            mimeType: '',
-                            convertTypes: 'image/png',
-                            convertSize: 5000000,
-                            //
-                            success: (blob) => {
-                                resolve(blob);
-                            },
-                            error: (error) => {
-                                reject(error);
-                            },
-                        });
-                    });
-                    await promise
-                        .then(blob => {
-                            myFiles[myFileIndex].blob = blob;
-                            myFiles[myFileIndex].src = URL.createObjectURL(blob);
-                            changedMyFileIndex.push(myFileIndex);
-                        })
-                        .catch(error => {
-                            alert(error.message)
-                        });
-                }
-                myFileIndex++;
-            }
-            $("#app").removeClass('splash');
-            return changedMyFileIndex;
-        }
+                        <!-- Card Footer: Permanent Stable Layout -->
+                        <div class="p-3 bg-white border-t border-slate-100 flex flex-col justify-between">
+                            
+                            <!-- Slider Header: Quality % -->
+                            <div class="flex justify-between items-center text-xs mb-1.5">
+                                <span class="text-slate-500 font-medium">کیفیت تصویر:</span>
+                                <span class="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px]" x-text="orig.quality + '٪'"></span>
+                            </div>
 
-        async function process(files) {
-            for (i = 0; i < files.length; i++) {
-                await myFiles.push({
-                    input: files[i],
-                    blob: null,
-                    src: null,
-                });
-            }
-            await compressAll();
-            await renderAll();
-        }
+                            <!-- Quality Slider (Step 1 by 1) -->
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="100" 
+                                step="1" 
+                                x-model.number="orig.quality" 
+                                @input="onQualityChange(orig)" 
+                                class="w-full mb-2 cursor-pointer"
+                                title="تنظیم درصد کیفیت"
+                            >
 
-        $(function () {
-            $(document).on('change', '#fileUploadInput', function (e) {
-                process(e.target.files);
-            });
-            $(document).on('click', '.downloadButton', function (e) {
-                index = $(this).attr('data-myFile-index') || '';
-                downloadAction(index);
-            });
-            $(document).on('click', '.deleteButton', function (e) {
-                index = $(this).attr('data-myFile-index') || '';
-                deleteAction(index);
-            });
-        })
+                            <!-- Size Before & After -->
+                            <div class="flex justify-between items-center text-[11px] text-slate-500 mb-2.5">
+                                <div>
+                                    <span>حجم قبل: </span>
+                                    <strong class="text-slate-700" x-text="formatBytes(orig.size)"></strong>
+                                </div>
+                                <div class="flex items-center">
+                                    <span>حجم بعد: </span>
+                                    <strong class="text-blue-600 font-bold ml-1 transition-opacity" :class="{ 'opacity-60': getCompressed(orig.id)?.processing }" x-text="formatBytes(getCompressed(orig.id)?.size || orig.size)"></strong>
+                                    <span x-show="getCompressed(orig.id)?.processing" class="inline-block w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping mr-1"></span>
+                                </div>
+                            </div>
 
-    </script>
+                            <!-- Footer Bottom Row: Reduction Badge & Single Download Button -->
+                            <div class="pt-2 border-t border-slate-100 flex items-center justify-between gap-2 min-h-[36px]">
+                                <div>
+                                    <span 
+                                        class="text-[11px] font-bold px-2 py-1 rounded-lg inline-flex items-center transition-all duration-150"
+                                        :class="(getCompressed(orig.id)?.percentSaved ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'"
+                                        x-text="((getCompressed(orig.id)?.percentSaved ?? 0) >= 0 ? '🔻 ' : '🔺 ') + Math.abs(getCompressed(orig.id)?.percentSaved ?? 0) + '٪ کاهش'"
+                                    ></span>
+                                </div>
+
+                                <!-- Safe Download Button in Footer -->
+                                <button 
+                                    @click="downloadSingle(getCompressed(orig.id))" 
+                                    :disabled="getCompressed(orig.id)?.processing || !getCompressed(orig.id)?.blob"
+                                    class="flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white disabled:opacity-40 disabled:pointer-events-none rounded-xl text-xs font-bold transition-all shadow-sm active:scale-95" 
+                                    title="دانلود اختصاصی این تصویر"
+                                >
+                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                    <span>دانلود</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </template>
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- Sticky Floating Bottom Bar for ZIP & Batch Actions -->
+    <template x-if="originalFiles.length > 0">
+        <div class="fixed bottom-4 inset-x-0 z-50 flex justify-center px-3 pointer-events-none">
+            <div class="pointer-events-auto bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-2xl p-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 sm:gap-6 max-w-xl w-full">
+                
+                <!-- Selection Toggle Button -->
+                <button 
+                    @click="toggleSelectAll()" 
+                    class="text-xs font-bold text-slate-600 hover:text-blue-600 px-2 py-1.5 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-1.5 flex-shrink-0"
+                >
+                    <svg class="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span x-text="isAllSelected ? 'لغو انتخاب' : 'انتخاب همه'"></span>
+                </button>
+
+                <!-- Stats Summary -->
+                <div class="hidden sm:flex flex-col text-right leading-tight">
+                    <span class="text-xs font-bold text-slate-700">
+                        <span class="text-blue-600 font-extrabold" x-text="selectedCount"></span> از <span x-text="originalFiles.length"></span> عکس انتخاب‌شده
+                    </span>
+                    <span class="text-[11px] text-emerald-600 font-medium" x-show="totalSavedPercent > 0" x-text="'صرفه‌جویی کل: ' + totalSavedPercent + '٪'"></span>
+                </div>
+
+                <!-- Big ZIP Download Button -->
+                <button 
+                    @click="downloadSelectedAsZip()" 
+                    :disabled="selectedCount === 0 || isZipping || isProcessingAny" 
+                    class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-slate-400 disabled:to-slate-400 text-white font-bold py-2.5 px-4 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 active:scale-98 transition-all disabled:pointer-events-none"
+                >
+                    <template x-if="!isZipping">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                    </template>
+                    <template x-if="isZipping">
+                        <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </template>
+                    <span>دانلود ZIP</span>
+                    <span class="bg-white/20 text-white text-[11px] px-2 py-0.5 rounded-full" x-text="selectedCount"></span>
+                </button>
+
+                <!-- Clear All Button -->
+                <button 
+                    @click="clearAll()" 
+                    class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors flex-shrink-0" 
+                    title="حذف تمام تصاویر"
+                >
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                </button>
+
+            </div>
+        </div>
+    </template>
+
+</div>
+
+<script type="module" src="/src/main.js"></script>
 </body>
-
 </html>
